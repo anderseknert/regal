@@ -1,4 +1,4 @@
-module github.com/styrainc/regal
+module github.com/anderseknert/regal
 
 go 1.22.5
 

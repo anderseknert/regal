@@ -3,6 +3,7 @@ package version
 
 import (
 	"runtime"
+	"runtime/debug"
 	"strings"
 )
 
@@ -51,13 +52,26 @@ func (vi Info) String() string {
 
 func New() Info {
 	return Info{
-		Version:   unknownString(Version),
+		Version:   versionString(Version),
 		GoVersion: goVersion,
 		Platform:  platform,
 		Commit:    unknownString(Commit),
 		Timestamp: unknownString(Timestamp),
 		Hostname:  unknownString(Hostname),
 	}
+}
+
+func versionString(version string) string {
+	if version != "" {
+		return version
+	}
+
+	bi, ok := debug.ReadBuildInfo()
+	if ok {
+		return bi.Main.Version
+	}
+
+	return "unknown"
 }
 
 func unknownString(s string) string {
