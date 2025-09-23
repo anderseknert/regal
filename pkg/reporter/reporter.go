@@ -2,6 +2,8 @@ package reporter
 
 import (
 	"context"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io"
 	"os"
@@ -13,15 +15,13 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/owenrumney/go-sarif/v2/sarif"
 
-	outil "github.com/open-policy-agent/opa/v1/util"
-
 	"github.com/open-policy-agent/regal/internal/mode"
 	"github.com/open-policy-agent/regal/internal/novelty"
+	"github.com/open-policy-agent/regal/internal/roast/encoding/exp"
 	"github.com/open-policy-agent/regal/internal/util"
 	"github.com/open-policy-agent/regal/pkg/fixer"
 	"github.com/open-policy-agent/regal/pkg/fixer/fixes"
 	"github.com/open-policy-agent/regal/pkg/report"
-	"github.com/open-policy-agent/regal/pkg/roast/encoding"
 )
 
 // Reporter releases linter reports in a format decided by the implementation.
@@ -309,14 +309,7 @@ func (tr JSONReporter) Publish(_ context.Context, r report.Report) error {
 		r.Violations = []report.Violation{}
 	}
 
-	bs, err := encoding.JSON().MarshalIndent(r, "", "  ")
-	if err != nil {
-		return fmt.Errorf("json marshalling of report failed: %w", err)
-	}
-
-	_, err = fmt.Fprintln(tr.out, outil.ByteSliceToString(bs))
-
-	return err
+	return json.MarshalEncode(jsontext.NewEncoder(tr.out, jsontext.WithIndent("  "), exp.Opts), r)
 }
 
 // Publish first prints the pretty formatted report to console for easy access in the logs. It then goes on

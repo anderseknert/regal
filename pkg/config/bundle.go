@@ -22,7 +22,7 @@ func WithDefaultsFromBundle(regalBundle *bundle.Bundle, userConfig *Config) (Con
 		panic("expected 'rules' of object type in default configuration")
 	}
 
-	defaultConfig := util.Must(encoding.JSONRoundTripTo[Config](bundledConf))
+	defaultConfig := encoding.MustJSONRoundTripTo[Config](bundledConf)
 	if userConfig == nil {
 		defaultConfig.Capabilities = CapabilitiesForThisVersion()
 

@@ -6,9 +6,11 @@ import (
 	"log"
 	"os"
 
+	"encoding/json/jsontext"
+	"encoding/json/v2"
+
 	"github.com/spf13/cobra"
 
-	"github.com/open-policy-agent/regal/pkg/roast/encoding"
 	"github.com/open-policy-agent/regal/pkg/version"
 )
 
@@ -38,9 +40,8 @@ func init() {
 
 			switch params.format {
 			case formatJSON:
-				e := encoding.JSON().NewEncoder(os.Stdout)
-				e.SetIndent("", "  ")
-				if err := e.Encode(vi); err != nil {
+				enc := jsontext.NewEncoder(os.Stdout, jsontext.WithIndent("  "))
+				if err := json.MarshalEncode(enc, vi); err != nil {
 					log.SetOutput(os.Stderr)
 					log.Println(err)
 					os.Exit(1)

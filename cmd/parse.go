@@ -5,12 +5,15 @@ import (
 	"log"
 	"os"
 
+	"encoding/json/jsontext"
+	"encoding/json/v2"
+
 	"github.com/spf13/cobra"
 
 	"github.com/open-policy-agent/opa/v1/util"
 
 	rp "github.com/open-policy-agent/regal/internal/parse"
-	"github.com/open-policy-agent/regal/pkg/roast/encoding"
+	"github.com/open-policy-agent/regal/internal/roast/encoding/exp"
 )
 
 func init() {
@@ -18,7 +21,6 @@ func init() {
 		Use:   "parse <path> [path [...]]",
 		Short: "Parse Rego source files with Regal enhancements included in output",
 		Long:  "This command works similar to `opa parse` but includes Regal enhancements in the AST output.",
-
 		PreRunE: func(_ *cobra.Command, args []string) error {
 			if len(args) == 0 {
 				return errors.New("no file to parse provided")
@@ -30,7 +32,6 @@ func init() {
 
 			return nil
 		},
-
 		Run: func(_ *cobra.Command, args []string) {
 			if err := parse(args); err != nil {
 				log.SetOutput(os.Stderr)
@@ -43,31 +44,15 @@ func init() {
 }
 
 func parse(args []string) error {
-	filename := args[0]
-
-	bs, err := os.ReadFile(filename)
+	bs, err := os.ReadFile(args[0])
 	if err != nil {
 		return err
 	}
 
-	content := util.ByteSliceToString(bs)
-
-	module, err := rp.ModuleUnknownVersionWithOpts(filename, content, rp.ParserOptions())
+	module, err := rp.ModuleUnknownVersionWithOpts(args[0], util.ByteSliceToString(bs), rp.ParserOptions())
 	if err != nil {
 		return err
 	}
 
-	enhancedAST, err := rp.PrepareAST(filename, content, module)
-	if err != nil {
-		return err
-	}
-
-	output, err := encoding.JSON().MarshalIndent(enhancedAST, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	_, err = os.Stdout.Write(output)
-
-	return err
+	return json.MarshalEncode(jsontext.NewEncoder(os.Stdout, jsontext.WithIndent("  "), exp.Opts), module)
 }

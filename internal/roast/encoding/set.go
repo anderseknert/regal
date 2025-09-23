@@ -1,6 +1,7 @@
 package encoding
 
 import (
+	"slices"
 	"sync"
 	"unsafe"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/open-policy-agent/opa/v1/ast"
 
 	"github.com/open-policy-agent/regal/internal/roast/encoding/util"
+	"github.com/open-policy-agent/regal/pkg/roast/rast"
 )
 
 type setCodec struct{}
@@ -28,5 +30,11 @@ type set struct {
 func (*setCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 	s := *((*set)(ptr))
 
-	util.WriteValsArray(stream, s.keys)
+	keys := s.keys
+	if !slices.IsSortedFunc(keys, rast.TermLocationSort) {
+		keys = slices.Clone(keys)
+		slices.SortStableFunc(keys, rast.TermLocationSort)
+	}
+
+	util.WriteValsArray(stream, keys)
 }

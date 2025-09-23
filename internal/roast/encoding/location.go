@@ -2,7 +2,6 @@ package encoding
 
 import (
 	"bytes"
-	"strconv"
 	"strings"
 	"sync"
 	"unsafe"
@@ -10,6 +9,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 
 	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/regal/internal/util"
 )
 
 type locationCodec struct{}
@@ -29,34 +29,36 @@ func (*locationCodec) IsEmpty(_ unsafe.Pointer) bool {
 func (*locationCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 	location := *((*ast.Location)(ptr))
 
-	var endRow, endCol int
-	if location.Text == nil {
-		endRow = location.Row
-		endCol = location.Col
-	} else {
-		lines := bytes.Split(location.Text, newLine)
+	endRow := location.Row
+	endCol := location.Col
 
-		numLines := len(lines)
-
-		endRow = location.Row + numLines - 1
-
-		if numLines == 1 {
+	if location.Text != nil {
+		if !bytes.Contains(location.Text, newLine) {
+			// single line
 			endCol = location.Col + len(location.Text)
 		} else {
-			lastLine := lines[numLines-1]
-			endCol = len(lastLine) + 1
+			// multi line
+			numLines := bytes.Count(location.Text, newLine) + 1
+			endRow = location.Row + numLines - 1
+
+			if numLines == 1 {
+				endCol = location.Col + len(location.Text)
+			} else {
+				lastLine := location.Text[bytes.LastIndexByte(location.Text, '\n')+1:]
+				endCol = len(lastLine) + 1
+			}
 		}
 	}
 
 	sb := sbPool.Get().(*strings.Builder) //nolint:forcetypeassert
 
-	sb.WriteString(strconv.Itoa(location.Row))
+	sb.WriteString(util.Itoa(location.Row))
 	sb.WriteByte(':')
-	sb.WriteString(strconv.Itoa(location.Col))
+	sb.WriteString(util.Itoa(location.Col))
 	sb.WriteByte(':')
-	sb.WriteString(strconv.Itoa(endRow))
+	sb.WriteString(util.Itoa(endRow))
 	sb.WriteByte(':')
-	sb.WriteString(strconv.Itoa(endCol))
+	sb.WriteString(util.Itoa(endCol))
 
 	stream.WriteString(sb.String())
 

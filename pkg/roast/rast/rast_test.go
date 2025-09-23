@@ -1,6 +1,7 @@
 package rast_test
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/open-policy-agent/opa/v1/ast"
@@ -140,4 +141,31 @@ func TestRefStringToBody(t *testing.T) {
 			t.Fatalf("expected body to equal %s, got %s", test, body)
 		}
 	}
+}
+
+func TestSortByLocation(t *testing.T) {
+	t.Parallel()
+
+	term := ast.MustParseTerm("{1, 3, 2}")
+	sl := slices.Clone(term.Value.(ast.Set).Slice())
+
+	if act, exp := toIntSlice(sl), []int{1, 2, 3}; !slices.Equal(exp, act) {
+		t.Errorf("expected %v got %v", exp, act)
+	}
+
+	rast.SortByLocation(sl)
+
+	if act, exp := toIntSlice(sl), []int{1, 3, 2}; !slices.Equal(exp, act) {
+		t.Errorf("expected %v got %v", exp, act)
+	}
+}
+
+func toIntSlice(ts []*ast.Term) []int {
+	ints := make([]int, 0, len(ts))
+	for _, term := range ts {
+		num, _ := term.Value.(ast.Number).Int()
+		ints = append(ints, num)
+	}
+
+	return ints
 }

@@ -1,6 +1,7 @@
 package encoding
 
 import (
+	"slices"
 	"sync"
 	"unsafe"
 
@@ -36,7 +37,13 @@ func (*objectCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 	stream.WriteArrayStart()
 
-	for i, node := range o.keys {
+	keys := o.keys
+	if !slices.IsSortedFunc(keys, objectElemSliceLocSort) {
+		keys = slices.Clone(keys)
+		slices.SortStableFunc(keys, objectElemSliceLocSort)
+	}
+
+	for i, node := range keys {
 		if i > 0 {
 			stream.WriteMore()
 		}
@@ -49,4 +56,12 @@ func (*objectCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 	}
 
 	stream.WriteArrayEnd()
+}
+
+func objectElemSliceLocSort(a, b *objectElem) int {
+	if a.key.Location == nil {
+		return 1
+	}
+
+	return a.key.Location.Compare(b.key.Location)
 }

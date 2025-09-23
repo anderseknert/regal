@@ -24,7 +24,9 @@ func (*moduleCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 	if mod.Package != nil {
 		if len(mod.Annotations) > 0 {
-			stream.Attachment = util.Filter(mod.Annotations, notDocumentOrRuleScope)
+			if pkgAnnotations := util.Filter(mod.Annotations, notDocumentOrRuleScope); len(pkgAnnotations) > 0 {
+				stream.Attachment = pkgAnnotations
+			}
 		}
 
 		encutil.WriteVal(stream, strPackage, mod.Package)

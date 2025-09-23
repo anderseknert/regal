@@ -16,6 +16,9 @@ import (
 	"testing"
 	"time"
 
+	"encoding/json/jsontext"
+	"encoding/json/v2"
+
 	"github.com/sourcegraph/jsonrpc2"
 
 	"github.com/open-policy-agent/opa/v1/ast"
@@ -729,17 +732,12 @@ func (l *LanguageServer) StartCommandWorker(ctx context.Context) { //nolint:main
 
 					f, err = os.OpenFile(output, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o755)
 					if err == nil {
-						var jsonVal []byte
-
 						value := result.Value
 						if result.IsUndefined {
-							// Display undefined as an empty object
-							value = emptyStringAnyMap
+							value = emptyStringAnyMap // Display undefined as an empty object
 						}
 
-						if jsonVal, err = encoding.JSON().MarshalIndent(value, "", "  "); err == nil {
-							_, err = f.Write(jsonVal)
-						}
+						err = json.MarshalEncode(jsontext.NewEncoder(f, jsontext.WithIndent("  ")), value)
 
 						f.Close()
 					}

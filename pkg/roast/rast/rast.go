@@ -101,6 +101,19 @@ func RefStringToRef(path string) ast.Ref {
 	return ast.Ref(terms)
 }
 
+func SortByLocation(ts []*ast.Term) {
+	if !slices.IsSortedFunc(ts, TermLocationSort) {
+		slices.SortStableFunc(ts, TermLocationSort)
+	}
+}
+
+func TermLocationSort(t1, t2 *ast.Term) int {
+	if t1.Location == nil {
+		return 1 // extra safety, but this should never happen
+	}
+	return t1.Location.Compare(t2.Location)
+}
+
 // LinesArrayTerm converts a string with newlines into an ast.Term array holding each line.
 func LinesArrayTerm(content string) *ast.Term {
 	return ArrayTerm(strings.Split(strings.ReplaceAll(content, "\r\n", "\n"), "\n"))

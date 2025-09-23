@@ -27,10 +27,11 @@ import (
 	"io"
 	"slices"
 
+	"encoding/json/v2"
+
 	"github.com/sourcegraph/jsonrpc2"
 
 	"github.com/open-policy-agent/regal/internal/lsp/log"
-	"github.com/open-policy-agent/regal/pkg/roast/encoding"
 	"github.com/open-policy-agent/regal/pkg/roast/util/concurrent"
 )
 
@@ -128,7 +129,7 @@ func logRequest(cfg LoggingConfig, req *jsonrpc2.Request) {
 		return
 	}
 
-	params, _ := encoding.JSON().Marshal(req.Params)
+	params, _ := json.Marshal(req.Params)
 	if req.Notif {
 		cfg.Logger.Message("--> notif: %s: %s\n", req.Method, params)
 	} else {
@@ -142,10 +143,10 @@ func logResponse(cfg LoggingConfig, resp *jsonrpc2.Response, method string) {
 	}
 
 	if resp.Result != nil {
-		result, _ := encoding.JSON().Marshal(resp.Result)
+		result, _ := json.Marshal(resp.Result)
 		cfg.Logger.Message("<-- response #%s: %s: %s\n", resp.ID, method, result)
 	} else {
-		errBs, _ := encoding.JSON().Marshal(resp.Error)
+		errBs, _ := json.Marshal(resp.Error)
 		cfg.Logger.Message("<-- response error #%s: %s: %s\n", resp.ID, method, errBs)
 	}
 }

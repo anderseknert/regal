@@ -3,7 +3,6 @@ package module
 import (
 	"bytes"
 	"encoding/base64"
-	"strconv"
 	"strings"
 
 	"github.com/open-policy-agent/opa/v1/ast"
@@ -123,13 +122,13 @@ func locationItem(location *ast.Location) [2]*ast.Term {
 			3, // 3 colons
 	)
 
-	sb.WriteString(strconv.Itoa(location.Row))
+	sb.WriteString(util.Itoa(location.Row))
 	sb.WriteByte(':')
-	sb.WriteString(strconv.Itoa(location.Col))
+	sb.WriteString(util.Itoa(location.Col))
 	sb.WriteByte(':')
-	sb.WriteString(strconv.Itoa(endRow))
+	sb.WriteString(util.Itoa(endRow))
 	sb.WriteByte(':')
-	sb.WriteString(strconv.Itoa(endCol))
+	sb.WriteString(util.Itoa(endCol))
 
 	return item("location", ast.InternedTerm(sb.String()))
 }
