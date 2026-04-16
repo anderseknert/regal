@@ -18,7 +18,9 @@ test_inside_comment if {
 		"position": {"line": 3, "character": 4},
 	}}
 
-	completion.inside_comment with input as _input with data.workspace.parsed as _data
+	completion.inside_comment
+		with input as _input
+		with data.workspace.parsed as _data
 }
 
 test_not_inside_comment if {
@@ -31,5 +33,7 @@ test_not_inside_comment if {
 		"position": {"line": 3, "character": 4},
 	}}
 
-	not completion.inside_comment with input as _input with data.workspace.parsed as _data
+	not completion.inside_comment
+		with input as _input
+		with data.workspace.parsed as _data
 }

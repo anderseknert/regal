@@ -79,30 +79,26 @@ test_success_too_long_for_a_one_liner if {
 }
 
 test_success_too_long_for_a_one_liner_configured_line_length if {
-	module := ast.with_rego_v1(`
-	rule if {
-		some_really_long_rule_name_in_fact_53_characters_long
-	}
-	`)
-	r := rule.report with input as module with config.rules as {"custom": {"one-liner-rule": {"max-line-length": 50}}}
+	r := rule.report
+		with input as ast.policy(`rule if {
+			some_really_long_rule_name_in_fact_53_characters_long
+		}`)
+		with config.rules as {"custom": {"one-liner-rule": {"max-line-length": 50}}}
 
 	r == set()
 }
 
 test_success_no_one_liner_comment_in_rule_body if {
-	module := ast.with_rego_v1(`
-	no_one_liner if {
+	r := rule.report with input as ast.policy(`no_one_liner if {
 		# Surely one equals one
 		1 == 1
-	}
-	`)
-	r := rule.report with input as module
+	}`)
 
 	r == set()
 }
 
 test_success_no_one_liner_comment_in_rule_body_same_line if {
-	module := ast.with_rego_v1(`
+	module := ast.policy(`
 	no_one_liner if {
 		1 == 1 # Surely one equals one
 	}
@@ -113,7 +109,7 @@ test_success_no_one_liner_comment_in_rule_body_same_line if {
 }
 
 test_success_no_one_liner_comment_in_rule_body_line_below if {
-	module := ast.with_rego_v1(`
+	module := ast.policy(`
 	no_one_liner if {
 		1 == 1
 		# Surely one equals one

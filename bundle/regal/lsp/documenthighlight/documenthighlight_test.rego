@@ -11,13 +11,14 @@ test_metadata_header_highlight if {
 # title: Test Rule
 allow if true`
 
-	items := documenthighlight.items with input as {
-		"params": {
-			"textDocument": {"uri": "file://p.rego"},
-			"position": {"line": 2, "character": 5},
-		},
-		"regal": {"file": {"lines": split(file_content, "\n")}},
-	}
+	items := documenthighlight.items
+		with input as {
+			"params": {
+				"textDocument": {"uri": "file://p.rego"},
+				"position": {"line": 2, "character": 5},
+			},
+			"regal": {"file": {"lines": split(file_content, "\n")}},
+		}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", file_content)
 
 	items == {
@@ -65,14 +66,15 @@ test_individual_metadata_attribute_highlight if {
 # title: Test Rule
 allow if true`
 
-	items := documenthighlight.items with input as {
-		"params": {
-			"textDocument": {"uri": "file://p.rego"},
-			# over the description attribute
-			"position": {"line": 3, "character": 5},
-		},
-		"regal": {"file": {"lines": split(file_content, "\n")}},
-	}
+	items := documenthighlight.items
+		with input as {
+			"params": {
+				"textDocument": {"uri": "file://p.rego"},
+				# over the description attribute
+				"position": {"line": 3, "character": 5},
+			},
+			"regal": {"file": {"lines": split(file_content, "\n")}},
+		}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", file_content)
 
 	# should highlight only the description attribute clicked
@@ -135,10 +137,9 @@ fun(user, action, resource) := user if {
 		}],
 	]
 
-	items := documenthighlight.items with input as {
-		"params": {"textDocument": {"uri": "file://p.rego"}, "position": inp},
-		"regal": {"file": {"lines": split(file_content, "\n")}},
-	}
+	items := documenthighlight.items
+		with input.params as {"textDocument": {"uri": "file://p.rego"}, "position": inp}
+		with input.regal as {"file": {"lines": split(file_content, "\n")}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", file_content)
 
 	items == exp

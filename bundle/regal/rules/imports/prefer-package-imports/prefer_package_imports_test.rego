@@ -37,83 +37,81 @@ test_fail_aggregate_report_on_imported_rule if {
 		}}},
 	}
 
-	r == {{
-		"category": "imports",
-		"description": "Prefer importing packages over rules",
-		"level": "error",
-		"location": {
-			"file": "policy1.rego",
-			"col": 1,
-			"row": 3,
-			"end": {
-				"col": 8,
-				"row": 3,
-			},
-			"text": "import data.b.c",
-		},
-		"related_resources": [{
-			"description": "documentation",
-			"ref": "https://www.openpolicyagent.org/projects/regal/rules/imports/prefer-package-imports",
-		}],
-		"title": "prefer-package-imports",
-	}}
-}
-
-test_success_aggregate_report_on_import_with_matching_package if {
-	r := rule.aggregate_report with input.aggregate as {
-		{"aggregate_data": {
-			"package_path": ["a"],
-			"imports": [[["b"], "3:1:3:8"]],
-		}},
-		{"aggregate_data": {
-			"package_path": ["b"],
-			"imports": [],
-		}},
-	}
-
-	r == set()
-}
-
-# unresolved imports should be flagged by an `unresolved-import`
-# rule instead. see https://github.com/open-policy-agent/regal/issues/300
-test_success_aggregate_report_on_import_with_unresolved_path if {
-	r := rule.aggregate_report with input.aggregate as {
-		{"aggregate_data": {
-			"package_path": ["a"],
-			"imports": [[["b"], "3:1:3:8"]],
-		}},
-		{"aggregate_data": {
-			"package_path": ["bar"],
-			"imports": [],
-		}},
-	}
-
-	r == set()
-}
-
-test_success_aggregate_report_ignored_import_path if {
-	aggregate := {
-		{"aggregate_data": {
-			"package_path": ["a"],
-			"imports": [[["b", "c"], "3:1:3:8"]],
-		}},
-		{"aggregate_data": {
-			"package_path": ["b"],
-			"imports": [],
-		}},
-	}
-
-	r := rule.aggregate_report with input.aggregate as aggregate
-		with config.rules as {"imports": {"prefer-package-imports": {
+		r == {{
+			"category": "imports",
+			"description": "Prefer importing packages over rules",
 			"level": "error",
-			"ignore-import-paths": ["data.b.c"],
-		}}}
+			"location": {
+				"file": "policy1.rego",
+				"col": 1,
+				"row": 3,
+				"end": {
+					"col": 8,
+					"row": 3,
+				},
+				"text": "import data.b.c",
+			},
+			"related_resources": [{
+				"description": "documentation",
+				"ref": "https://www.openpolicyagent.org/projects/regal/rules/imports/prefer-package-imports",
+			}],
+			"title": "prefer-package-imports",
+		}}
+	}
 
-	r == set()
-}
+	test_success_aggregate_report_on_import_with_matching_package if {
+		r := rule.aggregate_report with input.aggregate as {
+			{"aggregate_data": {
+				"package_path": ["a"],
+				"imports": [[["b"], "3:1:3:8"]],
+			}},
+			{"aggregate_data": {
+				"package_path": ["b"],
+				"imports": [],
+			}},
+		}
 
-test_aggregate_ignores_imports_of_regal_in_custom_rule if {
-	r := rule.aggregate with input as regal.parse_module("p.rego", `
+		r == set()
+	}
+
+	test_success_aggregate_report_on_import_with_unresolved_path if {
+		r := rule.aggregate_report with input.aggregate as {
+			{"aggregate_data": {
+				"package_path": ["a"],
+				"imports": [[["b"], "3:1:3:8"]],
+			}},
+			{"aggregate_data": {
+				"package_path": ["bar"],
+				"imports": [],
+			}},
+		}
+
+		r == set()
+	}
+
+	test_success_aggregate_report_ignored_import_path if {
+		aggregate := {
+			{"aggregate_data": {
+				"package_path": ["a"],
+				"imports": [[["b", "c"], "3:1:3:8"]],
+			}},
+			{"aggregate_data": {
+				"package_path": ["b"],
+				"imports": [],
+			}},
+		}
+
+		r := rule.aggregate_report with input.aggregate as aggregate
+			with config.rules as {"imports": {"prefer-package-imports": {
+				"level": "error",
+				"ignore-import-paths": ["data.b.c"],
+			}}}
+
+		r == set()
+	}
+
+	test_aggregate_ignores_imports_of_regal_in_custom_rule if {
+		r := rule.aggregate with input as regal.parse_module("p.rego", `
 	package custom.regal.rules.foo.bar
 
 	import data.regal.ast
@@ -121,8 +119,8 @@ test_aggregate_ignores_imports_of_regal_in_custom_rule if {
 	import data.a.b.c
 	`)
 
-	r == {{
-		"imports": [[["a", "b", "c"], "6:2:6:8"]],
-		"package_path": ["custom", "regal", "rules", "foo", "bar"],
-	}}
-}
+		r == {{
+			"imports": [[["a", "b", "c"], "6:2:6:8"]],
+			"package_path": ["custom", "regal", "rules", "foo", "bar"],
+		}}
+	}

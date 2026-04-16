@@ -96,9 +96,9 @@ _vars_no_builtins(terms) := [term |
 ]
 
 _exprs[rule_index][row] contains expr if {
-	some i
-	expr := input.rules[i].body[_]
-	rule_index := ast.rule_index_strings[i]
+	some rule_index
+	expr := input.rules[rule_index].body[_]
+
 	row := to_number(substring(expr.location, 0, indexof(expr.location, ":")))
 }
 

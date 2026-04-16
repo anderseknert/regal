@@ -12,13 +12,12 @@ import data.regal.util
 
 report contains violation if {
 	cfg := config.rules.style["prefer-some-in-iteration"]
-	some i, rule_index in ast.rule_index_strings
 
-	rule := input.rules[i]
+	some i, rule in input.rules
 
 	not _possible_top_level_iteration(rule)
 
-	some ref in ast.found.refs[rule_index]
+	some ref in ast.found.refs[i]
 
 	vars_in_ref := [term |
 		some term in array.slice(ref.value, 1, 100)

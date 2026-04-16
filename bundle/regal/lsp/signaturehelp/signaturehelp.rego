@@ -29,55 +29,55 @@ signature := obj if {
 		"activeSignature": 0,
 		"activeParameter": func_info.active_param - 1,
 	}
-}
-
-default _function_at_position(_, _) := {}
-
-_function_at_position(lines, position) := function if {
-	content := concat("\n", lines)
-	text := _text_up_to_position(lines, content, position)
-
-	# we want the last one specifically, so need to get all
-	result := regex.find_all_string_submatch_n(`([a-zA-Z_][a-zA-Z0-9_.]*)\(([^)]*)$`, text, -1)
-	last_match := regal.last(result)
-
-	function := {"name": last_match[1], "active_param": strings.count(last_match[2], ",") + 1}
-}
-
-# when position is after the last line
-_text_up_to_position(lines, content, position) := content if position.line >= count(lines)
-
-# when char is off the last line
-_text_up_to_position(lines, content, position) := content if {
-	position.line < count(lines)
-	current_line := lines[position.line]
-	position.character >= count(current_line)
-}
-
-_text_up_to_position(lines, _, position) := concat("\n", all_lines) if {
-	position.line < count(lines)
-
-	current_line := lines[position.line]
-	position.character < count(current_line)
-
-	all_lines := array.flatten([
-		[line | some i, line in lines; i < position.line],
-		substring(current_line, 0, position.character),
-	])
-}
-
-_build_function_label(declaration, func_name) := label if {
-	param_labels := concat(", ", [_param_label(arg) | some arg in declaration.args])
-	label := sprintf("%s(%s) -> %s", [func_name, param_labels, declaration.result.type])
-}
-
-_build_parameters(args) := [param |
-	some arg in args
-	label := _param_label(arg)
-	param := {
-		"label": label,
-		"documentation": sprintf("(%s): %s", [label, arg.description]),
 	}
-]
 
-_param_label(arg) := concat(": ", [arg.name, arg.type])
+	default _function_at_position(_, _) := {}
+
+	_function_at_position(lines, position) := function if {
+		content := concat("\n", lines)
+		text := _text_up_to_position(lines, content, position)
+
+		# we want the last one specifically, so need to get all
+		result := regex.find_all_string_submatch_n(`([a-zA-Z_][a-zA-Z0-9_.]*)\(([^)]*)$`, text, -1)
+		last_match := regal.last(result)
+
+		function := {"name": last_match[1], "active_param": strings.count(last_match[2], ",") + 1}
+	}
+
+	# when position is after the last line
+	_text_up_to_position(lines, content, position) := content if position.line >= count(lines)
+
+	# when char is off the last line
+	_text_up_to_position(lines, content, position) := content if {
+		position.line < count(lines)
+		current_line := lines[position.line]
+		position.character >= count(current_line)
+	}
+
+	_text_up_to_position(lines, _, position) := concat("\n", all_lines) if {
+		position.line < count(lines)
+
+		current_line := lines[position.line]
+		position.character < count(current_line)
+
+		all_lines := array.flatten([
+			[line | some i, line in lines; i < position.line],
+			substring(current_line, 0, position.character),
+		])
+	}
+
+	_build_function_label(declaration, func_name) := label if {
+		param_labels := concat(", ", [_param_label(arg) | some arg in declaration.args])
+		label := sprintf("%s(%s) -> %s", [func_name, param_labels, declaration.result.type])
+	}
+
+	_build_parameters(args) := [param |
+		some arg in args
+		label := _param_label(arg)
+		param := {
+			"label": label,
+			"documentation": sprintf("(%s): %s", [label, arg.description]),
+		}
+	]
+
+	_param_label(arg) := concat(": ", [arg.name, arg.type])

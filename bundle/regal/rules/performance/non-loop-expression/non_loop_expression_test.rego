@@ -12,7 +12,7 @@ allow if {
 }
 `)
 
-	sps == {"0": {5: {
+	sps == {0: {5: {
 		{"location": "5:13:5:17", "type": "var", "value": "path"},
 		{"location": "5:19:5:24", "type": "var", "value": "value"},
 	}}}
@@ -28,7 +28,7 @@ allow if {
 }
 `)
 
-	sps == {"0": {
+	sps == {0: {
 		5: {
 			{"location": "5:10:5:11", "type": "var", "value": "v"},
 			{"location": "5:7:5:8", "type": "var", "value": "k"},
@@ -45,7 +45,7 @@ allow if {
 }
 `)
 
-	sps == {"0": {5: {
+	sps == {0: {5: {
 		{"location": "5:10:5:11", "type": "var", "value": "v"},
 		{"location": "5:7:5:8", "type": "var", "value": "k"},
 	}}}
@@ -60,7 +60,7 @@ allow if {
 }
 `)
 
-	sps == {"0": {5: {{"location": "5:7:5:11", "type": "var", "value": "user"}}}}
+	sps == {0: {5: {{"location": "5:7:5:11", "type": "var", "value": "user"}}}}
 }
 
 test_loop_start_points_wildcard if {
@@ -71,7 +71,7 @@ allow if {
 }
 `)
 
-	sps == {"0": {5: {{"location": "5:2:5:7", "type": "var", "value": "email"}}}}
+	sps == {0: {5: {{"location": "5:2:5:7", "type": "var", "value": "email"}}}}
 }
 
 test_assignment_index if {
@@ -88,7 +88,7 @@ allow if {
 }
 `)
 
-	ai == {"0": {
+	ai == {0: {
 		"baz": {12},
 		"email": {6},
 		"foo": {9},
@@ -112,7 +112,7 @@ allow if {
 	not bar
 }`)
 
-	ai == {"0": {
+	ai == {0: {
 		"foos": {5},
 		"bar": {9},
 		"baz": {9},
@@ -351,30 +351,32 @@ test_non_ref_output_var if {
 }
 
 test_fail_non_loop_assignment_expression if {
-	r := rule.report with input as ast.policy(`r if {
-		some a in input.b
-		c := lower("HELLO")
-		d := concat("", [a, c])
-	}`)
+	r := rule.report
+		with input as ast.policy(`r if {
+			some a in input.b
+			c := lower("HELLO")
+			d := concat("", [a, c])
+		}`)
 		with ast.builtin_names as {"lower"}
 
 	r == with_location({
-		"col": 3,
+		"col": 4,
 		"end": {
-			"col": 22,
+			"col": 23,
 			"row": 5,
 		},
 		"file": "policy.rego",
 		"row": 5,
-		"text": "\t\tc := lower(\"HELLO\")",
+		"text": "\t\t\tc := lower(\"HELLO\")",
 	})
 }
 
 test_fail_non_loop_assignment_with_expression if {
-	r := rule.report with input as ast.policy(`r if {
-		some a in input.b
-		c := lower(foo) with input as {"foo": "bar"}
-	}`)
+	r := rule.report
+		with input as ast.policy(`r if {
+			some a in input.b
+			c := lower(foo) with input as {"foo": "bar"}
+		}`)
 		with ast.builtin_names as {"lower"}
 
 	r == {{
@@ -382,14 +384,14 @@ test_fail_non_loop_assignment_with_expression if {
 		"description": "Non-loop expression",
 		"level": "error",
 		"location": {
-			"col": 3,
+			"col": 4,
 			"end": {
-				"col": 47,
+				"col": 48,
 				"row": 5,
 			},
 			"file": "policy.rego",
 			"row": 5,
-			"text": "\t\tc := lower(foo) with input as {\"foo\": \"bar\"}",
+			"text": "\t\t\tc := lower(foo) with input as {\"foo\": \"bar\"}",
 		},
 		"related_resources": [{
 			"description": "documentation",
@@ -400,10 +402,11 @@ test_fail_non_loop_assignment_with_expression if {
 }
 
 test_success_non_loop_assignment_with_expression if {
-	r := rule.report with input as ast.policy(`r if {
-		some a in input.b
-		c := lower(foo) with input as {"foo": a}
-	}`)
+	r := rule.report
+		with input as ast.policy(`r if {
+			some a in input.b
+			c := lower(foo) with input as {"foo": a}
+		}`)
 		with ast.builtin_names as {"lower"}
 
 	r == set()

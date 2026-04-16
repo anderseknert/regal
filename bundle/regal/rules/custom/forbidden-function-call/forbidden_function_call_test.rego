@@ -10,9 +10,9 @@ test_fail_forbidden_function if {
 	module := ast.policy(`foo := http.send({"method": "GET", "url": "https://example.com"})`)
 
 	r := rule.report with input as module with config.rules as {"custom": {"forbidden-function-call": {
-		"level": "error",
-		"forbidden-functions": ["http.send"],
-	}}}
+			"level": "error",
+			"forbidden-functions": ["http.send"],
+		}}}
 		with config.capabilities as capabilities.provided
 
 	r == {{

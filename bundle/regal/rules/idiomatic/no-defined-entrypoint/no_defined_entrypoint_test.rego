@@ -37,6 +37,7 @@ allow := false`)
 
 test_fail_no_entrypoint_defined if {
 	r := rule.aggregate_report with input as {"aggregate": set()}
+
 	r == {{
 		"category": "idiomatic",
 		"description": "Missing entrypoint annotation",

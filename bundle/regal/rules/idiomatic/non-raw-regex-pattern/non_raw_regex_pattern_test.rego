@@ -7,8 +7,10 @@ import data.regal.config
 import data.regal.rules.idiomatic["non-raw-regex-pattern"] as rule
 
 test_fail_non_raw_rule_head if {
-	r := rule.report with input as ast.policy(`x := regex.match("[0-9]+", "1")`)
+	r := rule.report
+		with input as ast.policy(`x := regex.match("[0-9]+", "1")`)
 		with config.capabilities as capabilities.provided
+
 	r == {{
 		"category": "idiomatic",
 		"description": "Use raw strings for regex patterns",
@@ -36,6 +38,7 @@ test_fail_non_raw_rule_body if {
 		regex.is_valid("[0-9]+")
 	}`)
 		with config.capabilities as capabilities.provided
+
 	r == {{
 		"category": "idiomatic",
 		"description": "Use raw strings for regex patterns",

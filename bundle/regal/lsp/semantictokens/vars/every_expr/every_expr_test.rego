@@ -12,7 +12,8 @@ every_two_vars if {
 	}
 }`
 
-	tokens := every_expr.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	tokens := every_expr.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy)
 
 	some note, tc in {"every expression variables": {
@@ -39,7 +40,8 @@ every_one_var if {
 	}
 }`
 
-	tokens := every_expr.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	tokens := every_expr.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy)
 
 	some note, tc in {"every expression variables": {

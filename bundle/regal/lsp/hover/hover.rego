@@ -118,36 +118,36 @@ tooltip(func) := trim_space($`### [{func.name}]({_doc_url(func)})
 
 default _fenced_rego(_) := ""
 
-_fenced_rego(func) := $"```rego\n{rets} := {func.name}({args})\n```" if {
-	func.name != "print"
+_fenced_rego(fun) := $"```rego\n{rets} := {fun.name}({args})\n```" if {
+	fun.name != "print"
 
-	rets := object.get(func, ["decl", "result", "name"], "output")
-	args := concat(", ", [arg.name | some arg in func.decl.args])
+	rets := object.get(fun, ["decl", "result", "name"], "output")
+	args := concat(", ", [arg.name | some arg in fun.decl.args])
 }
 
-_fenced_rego(func) := $"```rego\n{func.name}(arg1, arg2, ...)\n```\n" if func.decl.variadic
+_fenced_rego(fun) := $"```rego\n{fun.name}(arg1, arg2, ...)\n```\n" if fun.decl.variadic
 
-_category(func) := func.categories[0] if {
-	func.categories != []
-} else := util.substring_to(func.name, 0, ".")
+_category(fun) := fun.categories[0] if {
+	fun.categories != []
+} else := util.substring_to(fun.name, 0, ".")
 
-_doc_url(func) := override if {
-	override := _doc_override(func)
+_doc_url(fun) := override if {
+	override := _doc_override(fun)
 } else := $"https://www.openpolicyagent.org/docs/policy-reference/#builtin-{cat}-{txt}" if {
-	cat := _category(func)
-	txt := replace(func.name, ".", "")
+	cat := _category(fun)
+	txt := replace(fun.name, ".", "")
 }
 
-_doc_override(func) := "https://www.openpolicyagent.org/docs/policy-reference/builtins/opa#debugging" if {
+_doc_override(fun) := "https://www.openpolicyagent.org/docs/policy-reference/builtins/opa#debugging" if {
 	# annoying special case that we should fix in OPA
 	# (there's no anchor for the print function)
-	func.name == "print"
+	fun.name == "print"
 }
 
-_doc_override(func) := substring(text, 4, 1000) if {
+_doc_override(fun) := substring(text, 4, 1000) if {
 	# first see if there's an explicit link override in the categories
 	# which is a hack EOPA did/does for custom links since 1.29.1
-	some text in func.categories
+	some text in fun.categories
 
 	startswith(text, "url=")
 }

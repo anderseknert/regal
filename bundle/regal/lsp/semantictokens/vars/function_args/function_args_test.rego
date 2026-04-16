@@ -13,7 +13,8 @@ test_function(param1, param2) := result if {
 	calc3 := 1
 	calc3 == param1
 }`
-	tokens := function_args.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	tokens := function_args.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy)
 
 	{"location": "3:15:3:21", "value": "param1", "type": "var"} in tokens.declaration
@@ -30,7 +31,8 @@ test_function_args_declarations_only if {
 test_function(param1, param2) := result if {
 	true
 }`
-	tokens := function_args.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	tokens := function_args.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy)
 
 	{"location": "3:15:3:21", "value": "param1", "type": "var"} in tokens.declaration

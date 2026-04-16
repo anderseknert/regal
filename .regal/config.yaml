@@ -87,6 +87,8 @@ rules:
             - aggs
             - cfg
             - word
+            - hint
+            - info
             - start
             - link
             - len

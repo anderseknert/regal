@@ -10,7 +10,8 @@ array_comprehensions := [x |
 	i == 2
 ]`
 
-	array_comp_tokens := comprehensions.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	array_comp_tokens := comprehensions.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy_one)
 
 	some note, tc in {"array comprehensions": {
@@ -36,7 +37,8 @@ set_comprehensions := {x |
 	i == 2
 }`
 
-	set_comp_tokens := comprehensions.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	set_comp_tokens := comprehensions.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy_one)
 
 	some note, tc in {"set comprehensions": {
@@ -61,7 +63,8 @@ object_comprehensions := {k: v |
 	some k, v in [1, 2, 3]
 	v == 2
 }`
-	object_comp_tokens := comprehensions.result with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
+	object_comp_tokens := comprehensions.result
+		with input as {"params": {"textDocument": {"uri": "file://p.rego"}}}
 		with data.workspace.parsed["file://p.rego"] as regal.parse_module("p.rego", policy_one)
 
 	some note, tc in {"object comprehensions": {

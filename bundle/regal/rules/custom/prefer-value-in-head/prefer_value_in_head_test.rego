@@ -98,30 +98,32 @@ test_fail_value_could_be_in_head_templatestring if {
 }
 
 test_success_only_scalar_no_include_interpolated if {
-	r := rule.report with input as ast.policy(`value := x if {
-		input.x
-		x := $"{input.y}"
-	}`)
+	r := rule.report
+		with input as ast.policy(`value := x if {
+			input.x
+			x := $"{input.y}"
+		}`)
 		with config.rules as {"custom": {"prefer-value-in-head": {"only-scalars": true}}}
 
 	r == set()
 }
 
 test_fail_value_could_be_in_head_only_scalars_with_include_interpolated if {
-	r := rule.report with input as ast.policy(`value := x if {
-		input.x
-		x := $"{input.y}"
-	}`)
+	r := rule.report
+		with input as ast.policy(`value := x if {
+			input.x
+			x := $"{input.y}"
+		}`)
 		with config.rules as {"custom": {"prefer-value-in-head": {"only-scalars": true, "include-interpolated": true}}}
 
 	r == expected_with_location({
-		"col": 8,
+		"col": 9,
 		"row": 5,
 		"end": {
-			"col": 20,
+			"col": 21,
 			"row": 5,
 		},
-		"text": "\t\tx := $\"{input.y}\"",
+		"text": "\t\t\tx := $\"{input.y}\"",
 	})
 }
 
@@ -130,7 +132,8 @@ test_fail_value_could_be_in_head_and_is_a_scalar if {
 		input.x
 		x := 5
 	}`)
-	r := rule.report with input as module
+	r := rule.report
+		with input as module
 		with config.rules as {"custom": {"prefer-value-in-head": {"only-scalars": true}}}
 
 	r == expected_with_location({
