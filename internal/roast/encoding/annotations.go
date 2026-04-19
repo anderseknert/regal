@@ -30,9 +30,7 @@ func (*annotationsCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 		write.String(stream, "description", a.Description)
 	}
 
-	if a.Entrypoint {
-		write.Bool(stream, "entrypoint", a.Entrypoint)
-	}
+	write.IfTrue(stream, "entrypoint", a.Entrypoint)
 
 	if len(a.Organizations) > 0 {
 		write.ValsArrayAttr(stream, "organizations", a.Organizations)

@@ -29,9 +29,7 @@ func (*headCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 		write.ValsArrayAttr(stream, "args", head.Args)
 	}
 
-	if head.Assign {
-		write.Bool(stream, "assign", head.Assign)
-	}
+	write.IfTrue(stream, "assign", head.Assign)
 
 	if head.Key != nil {
 		stream.WriteObjectField("key")

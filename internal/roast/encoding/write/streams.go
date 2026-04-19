@@ -67,6 +67,12 @@ func Bool(stream *jsoniter.Stream, field string, val bool) {
 	stream.WriteMore()
 }
 
+func IfTrue(stream *jsoniter.Stream, field string, val bool) {
+	if val {
+		Bool(stream, field, val)
+	}
+}
+
 func ObjectStart(stream *jsoniter.Stream, loc *ast.Location) {
 	stream.WriteObjectStart()
 

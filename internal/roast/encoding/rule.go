@@ -26,9 +26,7 @@ func (*ruleCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 		write.ValsArrayAttr(stream, "annotations", rule.Annotations)
 	}
 
-	if rule.Default {
-		write.Bool(stream, "default", rule.Default)
-	}
+	write.IfTrue(stream, "default", rule.Default)
 
 	if rule.Head != nil {
 		write.Val(stream, "head", rule.Head)

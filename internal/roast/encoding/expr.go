@@ -21,13 +21,8 @@ func (*exprCodec) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
 
 	write.ObjectStart(stream, expr.Location)
 
-	if expr.Negated {
-		write.Bool(stream, "negated", expr.Negated)
-	}
-
-	if expr.Generated {
-		write.Bool(stream, "generated", expr.Generated)
-	}
+	write.IfTrue(stream, "negated", expr.Negated)
+	write.IfTrue(stream, "generated", expr.Generated)
 
 	if stream.Attachment != nil {
 		if s, ok := stream.Attachment.(string); ok && s == "interpolated" {
