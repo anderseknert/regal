@@ -87,6 +87,8 @@ _capabilities.codeActionProvider := {
 	],
 }
 
+_capabilities.inlineValueProvider := {}
+
 _capabilities.executeCommandProvider.commands := _commands
 
 _commands contains "regal.eval"

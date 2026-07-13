@@ -35,6 +35,7 @@ _handlers := {
 	"textDocument/foldingRange": "foldingrange",
 	"textDocument/hover": "hover",
 	"textDocument/inlayHint": "inlayhint",
+	"textDocument/inlineValue": "inlinevalue",
 	"textDocument/linkedEditingRange": "linkededitingrange",
 	"textDocument/prepareRename": "preparerename",
 	"textDocument/references": "references",
